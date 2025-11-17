@@ -1,5 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { LiveAudioVisualizer } from "react-audio-visualize";
+import { checkMicrophonePermission, requestMicrophonePermission } from "tauri-plugin-macos-permissions-api";
 
 export default function Home() {
   const [MEDIAREC, setMEDIAREC] = useState([]);
@@ -144,6 +145,25 @@ export default function Home() {
     audioChunksRef.current = [];
 
     try {
+      // Check and request microphone permissions (macOS)
+      try {
+        const hasPermission = await checkMicrophonePermission();
+        if (!hasPermission) {
+          const granted = await requestMicrophonePermission();
+          if (!granted) {
+            throw new Error("Microphone permission was denied. Please enable it in System Settings.");
+          }
+        }
+      } catch (permError) {
+        // If we're not in Tauri (web mode), skip permission check
+        console.log("Permission check skipped (not in Tauri):", permError);
+      }
+
+      // Check if mediaDevices is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Microphone access is not available. Please check your browser/desktop app permissions.");
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       setMEDIAREC(mediaRecorder);

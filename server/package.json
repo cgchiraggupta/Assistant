@@ -5,6 +5,8 @@
     "ws": "^8.18.0"
   },
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "start": "./start-server.sh",
+    "start:safe": "./start-server.sh"
   }
 }

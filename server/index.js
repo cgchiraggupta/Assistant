@@ -123,7 +123,9 @@ server.on("upgrade", (req, socket, head) => {
   }
 });
 
-// Start the server on port 4000
-server.listen(4000, () => {
-  console.log("WebSocket server is listening on ws://localhost:4000/Assistant");
+// Start the server on port 4000 (configurable via PORT env variable)
+const PORT = process.env.PORT || 4000;
+
+server.listen(PORT, () => {
+  console.log(`WebSocket server is listening on ws://localhost:${PORT}/Assistant`);
 });
